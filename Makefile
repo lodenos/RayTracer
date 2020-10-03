@@ -5,14 +5,19 @@ FLAGS = -Wall -Werror -Wextra -Weverything -std=gnu++2a -Wno-reserved-id-macro \
 
 INCLUDE = -I ./inc -I ./SDL2-2.0.12/include
 
-LIBRARY = -L ./SDL2-2.0.12/build -lSDL2 -pthread -Ofast
+LIBRARY = -L ./SDL2-2.0.12/build -lSDL2 -pthread -O4
 
 NAME = raytracer
 
 OBJ = $(sort $(addsuffix .o, $(basename $(SRC))))
 
 SRC = \
-  $(wildcard ./src/*.cpp)
+  $(wildcard ./src/*.cpp) \
+  $(wildcard ./src/Camera/*.cpp) \
+  $(wildcard ./src/Event/*.cpp) \
+  $(wildcard ./src/Object/*.cpp) \
+  $(wildcard ./src/Vector/*.cpp) \
+  $(wildcard ./src/Window/*.cpp)
 
 all: $(NAME)
 
@@ -21,7 +26,6 @@ all: $(NAME)
 ################################################################################
 
 $(NAME): $(OBJ)
-	@printf "Compiling " $(NAME)
 	$(CXX) $(FLAGS) -o $(NAME) $(OBJ) $(LIBRARY)
 
 ################################################################################
@@ -30,7 +34,6 @@ $(NAME): $(OBJ)
 
 $(OBJ): %.o: $(basename $@)%.cpp
 	$(CXX) $(FLAGS) -c $(INCLUDE) $< -o $@
-	@$(call _GREEN, $(addsuffix .cpp, $(basename $@)))
 
 ###############################################################################
 ### Clean all obj
@@ -38,7 +41,6 @@ $(OBJ): %.o: $(basename $@)%.cpp
 
 clean:
 	@rm -f $(OBJ)
-	@$(call _GREEN, "ok")
 
 ###############################################################################
 ### Clean all
@@ -46,12 +48,9 @@ clean:
 
 fclean: clean
 	@rm -f $(NAME)
-	@rm -rf libuWS.dylib
-	@$(call _GREEN, "ok")
 
 ###############################################################################
 ### Clean all && re-build
 ###############################################################################
 
 re: fclean all
-	@$(call _GREEN, "ok")
